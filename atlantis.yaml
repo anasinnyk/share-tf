@@ -1,0 +1,23 @@
+version: 2
+projects:
+- name: gis
+  dir: .
+  workspace: default
+  autoplan:
+    when_modified: ["*.tf", "../modules/**.tf"]
+    enabled: true
+  apply_requirements: [mergeable, approved]
+  workflow: default
+workflows:
+  default:
+    plan:
+      steps:
+      - run: "apk add --update curl"
+      - init:
+          extra_args: [-backend-config=./projects/gis/backend.tfvars]
+      - plan:
+          extra_args: [-var-file=./projects/gis/prod.tfvars]
+    apply:
+      steps:
+      - apply:
+          extra_args: [-var-file=./projects/gis/prod.tfvars]
